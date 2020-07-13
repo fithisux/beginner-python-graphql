@@ -9,7 +9,7 @@ The basic blog app from the Flask `tutorial`_ built Graphql style.
 Install
 -------
 
-Use the asme installation instructions as the original Flask tutorial
+Use the same installation instructions as the original Flask tutorial
 
 
 Run
