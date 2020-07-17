@@ -6,6 +6,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import datetime
 from sqlalchemy.orm import Query
+from flaskql.models import dao
+from sqlalchemy.orm import scoped_session
+from contextlib import contextmanager
 
 def get_db():
     """Connect to the application's configured database. The connection
@@ -25,30 +28,37 @@ def close_db(e=None):
     engine = g.pop("engine", None)
 
 
+@contextmanager
+def grab_session(engine):
+    Session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+    session = Session()
+    yield session
+    session.close()
+    
+
 def init_db():
     """Clear existing data and create new tables."""
     
     engine = get_db()
     
-    from flaskql import models
-    
-    models.Base.metadata.create_all(engine)
+    from sqlalchemy.schema import MetaData
 
-    Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    metadata : MetaData = dao.metadata
+
+    metadata.create_all(engine)
+
+    with grab_session(engine) as session:
+        
+        Query(dao.User, session).delete()
+        Query(dao.Post, session).delete()
+        
+        user = dao.User(username = 'vasilis', password = 'pass123')
+        session.add(user)
     
-    session = Session()
+        post = dao.Post(title = 'Flowers', body = 'A rose is a rose', created = datetime.datetime.now(), author = user)
+        session.add(post) 
     
-    Query(models.User, session).delete()
-    
-    
-    user = models.User(username = 'vasilis', password = 'pass123')
-    session.add(user)
- 
-    post = models.Post(title = 'Flowers', body = 'A rose is a rose', created = datetime.datetime.now(), author = user)
-    session.add(post) 
-    
-    session.commit() 
-    session.close() 
+        session.commit() 
 
 
 @click.command("init-db")

@@ -1,11 +1,10 @@
-from sqlalchemy import *
-from sqlalchemy.orm import (scoped_session, sessionmaker, relationship,
-                            backref)
+from sqlalchemy import Column, Integer, String, TIMESTAMP, ForeignKey, func
+from sqlalchemy.orm import (relationship, backref)
 from sqlalchemy.ext.declarative import declarative_base
-from typing import Any
+from sqlalchemy.schema import MetaData
 
-Base : Any = declarative_base()
-print(Base.metadata)
+Base = declarative_base()
+metadata : MetaData = Base.metadata
 
 class User(Base):
     __tablename__ = 'user'

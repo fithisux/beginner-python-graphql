@@ -4,8 +4,8 @@ from sqlalchemy import *
 from sqlalchemy.orm import (scoped_session, sessionmaker, relationship,
                             backref)
 import os
-from flaskql.models import Base 
-from flaskql import schema
+from flaskql.schema import query
+from flaskql.schema import mutation
 from flask_graphql import GraphQLView
 import graphene
 
@@ -41,7 +41,7 @@ def create_app(test_config=None):
 
     db.init_app(app)
     
-    gschema = graphene.Schema(query=schema.Query, mutation=schema.Mutation)
+    gschema = graphene.Schema(query=query.Query, mutation=mutation.Mutation)
     
     app.add_url_rule(
         '/graphql', view_func=GraphQLView.as_view('graphql', schema=gschema, graphiql=True)
