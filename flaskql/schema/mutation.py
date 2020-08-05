@@ -27,6 +27,11 @@ class CreateUser(graphene.Mutation):
         return result
      
 class CreatePost(graphene.Mutation):
+    class Arguments:
+        userId = graphene.String()
+        title = graphene.String()
+        body = graphene.String()
+        
     ok = graphene.Boolean()
     post = graphene.Field(gqlmodel.GQLPost)
  
@@ -50,6 +55,9 @@ class CreatePost(graphene.Mutation):
         return result
      
 class DeleteUser(graphene.Mutation):
+    class Arguments:
+        userId = graphene.String()
+        
     ok = graphene.Boolean()
     user = graphene.Field(gqlmodel.GQLUser)
  
@@ -71,6 +79,9 @@ class DeleteUser(graphene.Mutation):
         return result
      
 class DeletePost(graphene.Mutation):
+    class Arguments:
+        postId = graphene.String()
+        
     ok = graphene.Boolean()
     post = graphene.Field(gqlmodel.GQLPost)
  
