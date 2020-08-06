@@ -28,7 +28,7 @@ class CreateUser(graphene.Mutation):
      
 class CreatePost(graphene.Mutation):
     class Arguments:
-        userId = graphene.String()
+        userId = graphene.Int()
         title = graphene.String()
         body = graphene.String()
         
@@ -56,7 +56,7 @@ class CreatePost(graphene.Mutation):
      
 class DeleteUser(graphene.Mutation):
     class Arguments:
-        userId = graphene.String()
+        userId = graphene.Int()
         
     ok = graphene.Boolean()
     user = graphene.Field(gqlmodel.GQLUser)
@@ -72,6 +72,7 @@ class DeleteUser(graphene.Mutation):
                 ok = False
             else:
                 q.delete()
+                session.commit()
                 ok = True
                 
             result = DeleteUser(user=gqlmodel.GQLUser.convert(user), ok=ok)
@@ -80,7 +81,7 @@ class DeleteUser(graphene.Mutation):
      
 class DeletePost(graphene.Mutation):
     class Arguments:
-        postId = graphene.String()
+        postId = graphene.Int()
         
     ok = graphene.Boolean()
     post = graphene.Field(gqlmodel.GQLPost)
@@ -97,6 +98,7 @@ class DeletePost(graphene.Mutation):
                 ok = False
             else:
                 q.delete()
+                session.commit()
                 ok = True
                 
             result = DeletePost(post=gqlmodel.GQLPost.convert(post), ok=ok)    
