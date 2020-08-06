@@ -84,7 +84,6 @@ class DeletePost(graphene.Mutation):
     ok = graphene.Boolean()
     post = graphene.Field(gqlmodel.GQLPost)
  
-
     def mutate(self, info, postId=None):
         result = None
         
@@ -102,7 +101,6 @@ class DeletePost(graphene.Mutation):
             result = DeletePost(post=gqlmodel.GQLPost.convert(post), ok=ok)    
         
         return result
-
                 
 class Mutation(graphene.ObjectType):
     create_user = CreateUser.Field() 
