@@ -4,7 +4,6 @@ from  flaskql.models import gqlmodel
 from  flaskql.models import dao
 from flaskql import db
 
-
 class CreateUser(graphene.Mutation):
     class Arguments:
         username = graphene.String()
@@ -14,11 +13,10 @@ class CreateUser(graphene.Mutation):
     user = graphene.Field(gqlmodel.GQLUser)
  
     def mutate(self, info, username=None, password = None):
-        user = dao.User(username=username, password=password)
-        
         result = None
         
         with(db.grab_session(db.get_db())) as session:
+            user = dao.User(username=username, password=password)
             session.add(user)
             session.commit()
             ok = True
