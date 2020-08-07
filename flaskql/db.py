@@ -4,33 +4,37 @@ from flask import g
 from flask.cli import with_appcontext
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.schema import MetaData
 import datetime
 from sqlalchemy.orm import Query
 from flaskql.models import dao
 from sqlalchemy.orm import scoped_session
 from contextlib import contextmanager
 
-def get_db():
-    """Connect to the application's configured database. The connection
-    is unique for each request and will be reused if this is called
-    again.
-    """
+from sqlalchemy.engine import Engine
+from sqlalchemy import event
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
+        
+def get_engine():
     if "engine" not in g:
         g.engine = create_engine(f"sqlite:///{current_app.config['DATABASE']}", convert_unicode=True)
-
+        metadata : MetaData = dao.metadata
+        metadata.create_all(g.engine)
     return g.engine
 
 
 def close_db(e=None):
-    """If this request connected to the database, close the
-    connection.
-    """
     engine = g.pop("engine", None)
 
 
 @contextmanager
-def grab_session(engine):
-    Session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+def grab_session():
+    Session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=get_engine()))
     session = Session()
     yield session
     session.close()
@@ -39,15 +43,9 @@ def grab_session(engine):
 def init_db():
     """Clear existing data and create new tables."""
     
-    engine = get_db()
     
-    from sqlalchemy.schema import MetaData
-
-    metadata : MetaData = dao.metadata
-
-    metadata.create_all(engine)
-
-    with grab_session(engine) as session:
+    
+    with grab_session() as session:
         
         Query(dao.User, session).delete()
         Query(dao.Post, session).delete()
@@ -55,7 +53,7 @@ def init_db():
         user = dao.User(username = 'vasilis', password = 'pass123')
         session.add(user)
     
-        post = dao.Post(title = 'Flowers', body = 'A rose is a rose', created = datetime.datetime.now(), author = user)
+        post = dao.Post(title = 'Flowers', body = 'A rose is a rose', created = datetime.datetime.now(), user = user)
         session.add(post) 
     
         session.commit() 

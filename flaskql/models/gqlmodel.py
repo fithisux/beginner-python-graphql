@@ -36,5 +36,5 @@ class GQLPost(graphene.ObjectType):
             gqlPost.title = post.title
             gqlPost.id = post.id
             gqlPost.created = post.created
-            gqlPost.user = GQLUser.convert(post.author)
+            gqlPost.user = GQLUser.convert(post.user)
             return gqlPost

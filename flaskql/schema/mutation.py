@@ -15,7 +15,7 @@ class CreateUser(graphene.Mutation):
     def mutate(self, info, username=None, password = None):
         result = None
         
-        with(db.grab_session(db.get_db())) as session:
+        with(db.grab_session()) as session:
             user = dao.User(username=username, password=password)
             session.add(user)
             session.commit()
@@ -36,15 +36,15 @@ class CreatePost(graphene.Mutation):
     def mutate(self, info, userId=None, title=None, body=None):
         result = None
         
-        with(db.grab_session(db.get_db())) as session:
+        with(db.grab_session()) as session:
             user = session.query(dao.User).filter(dao.User.id == userId).one()
         
             if user == None:
                 ok = False
                 post = None
             else:
-                post = dao.Post(title = title, body = body , created = datetime.datetime.now(), author = user)
-                session.add(user)
+                post = dao.Post(title = title, body = body , created = datetime.datetime.now(), user = user)
+                session.add(post)
                 session.commit()
                 ok = True
                 
@@ -62,7 +62,7 @@ class DeleteUser(graphene.Mutation):
     def mutate(self, info, userId=None):
         result = None
         
-        with(db.grab_session(db.get_db())) as session:
+        with(db.grab_session()) as session:
             q = session.query(dao.User).filter(dao.User.id == userId)
             user = q.one()
         
@@ -87,7 +87,7 @@ class DeletePost(graphene.Mutation):
     def mutate(self, info, postId=None):
         result = None
         
-        with(db.grab_session(db.get_db())) as session:
+        with(db.grab_session()) as session:
             q = session.query(dao.Post).filter(dao.Post.id == postId)
             post = q.one()
         

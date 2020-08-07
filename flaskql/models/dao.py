@@ -11,6 +11,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String, unique = True, nullable=False)
     password = Column(String, nullable=False)
+    #posts = relationship("Post", backref="user", cascade='delete-orphan,all')
 
 
 class Post(Base):
@@ -21,10 +22,7 @@ class Post(Base):
     body = Column(String, nullable=False)
     
     created = Column(TIMESTAMP, default=func.now())
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
     
-    author_id = Column(Integer, ForeignKey('user.id'))
-    author = relationship(
-        User,
-        backref=backref('posts',
-                        uselist=True,
-                        cascade='delete,all'))
+    user = relationship(User, backref=backref("posts", passive_deletes=True))
+    

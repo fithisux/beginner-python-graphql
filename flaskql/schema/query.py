@@ -13,7 +13,7 @@ class Query(graphene.ObjectType):
     def resolve_user(self, info,  username=None):
         result = None
         
-        with(db.grab_session(db.get_db())) as session:
+        with(db.grab_session()) as session:
             q = session.query(dao.User)
             result = gqlmodel.GQLUser.convert(q.filter(dao.User.username == username).one())
         
@@ -22,7 +22,7 @@ class Query(graphene.ObjectType):
     def resolve_post(self, info, title=None): 
         result = None
            
-        with(db.grab_session(db.get_db())) as session:
+        with(db.grab_session()) as session:
             q = session.query(dao.Post)
             result = gqlmodel.GQLPost.convert(q.filter(dao.Post.title == title).one())
         
@@ -31,7 +31,7 @@ class Query(graphene.ObjectType):
     def resolve_allusers(self, info):
         result = None
         
-        with(db.grab_session(db.get_db())) as session:
+        with(db.grab_session()) as session:
             q = session.query(dao.User)
             result = [gqlmodel.GQLUser.convert(user) for user in q.all()]
         
@@ -40,7 +40,7 @@ class Query(graphene.ObjectType):
     def resolve_allposts(self, info):   
         result = None
          
-        with(db.grab_session(db.get_db())) as session:
+        with(db.grab_session()) as session:
             q = session.query(dao.Post)
             result = [gqlmodel.GQLPost.convert(post) for post in q.all()]
         
