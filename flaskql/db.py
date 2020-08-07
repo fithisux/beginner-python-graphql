@@ -27,11 +27,6 @@ def get_engine():
         metadata.create_all(g.engine)
     return g.engine
 
-
-def close_db(e=None):
-    engine = g.pop("engine", None)
-
-
 @contextmanager
 def grab_session():
     Session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=get_engine()))
@@ -58,6 +53,8 @@ def init_db():
     
         session.commit() 
 
+def close_db(e=None):
+    engine = g.pop("engine", None)
 
 @click.command("init-db")
 @with_appcontext
