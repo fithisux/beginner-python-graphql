@@ -38,8 +38,6 @@ def grab_session():
 def init_db():
     """Clear existing data and create new tables."""
     
-    
-    
     with grab_session() as session:
         
         Query(dao.User, session).delete()
