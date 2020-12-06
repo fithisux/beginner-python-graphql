@@ -1,15 +1,10 @@
-from behave import given, when, then, step
-import flaskql
-import os
-import tempfile
-from multiprocessing import Process
-import time
-from werkzeug.test import Client
+from behave import given, when, then
+
 import requests
 import json
 
 
-@given('We are initialized successfully')
+@given('We are in the initial state')
 def is_initialized(context):
     query = '''
         {
@@ -63,8 +58,8 @@ def post_creation(context):
         }
     assertion_helper(json.dumps(json.loads(rv.text)), json.dumps(expected_json_response))
 
-@then('We can retrieve a post with data')
-def step_impl(context):
+@then('We can retrieve only one post with data')
+def post_asserton(context):
     row = context.table[0]
     body = row['body']
     title = row['title']
